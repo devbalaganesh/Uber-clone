@@ -1,19 +1,32 @@
 import React from 'react';
 import MapView, { PROVIDER_DEFAULT } from 'react-native-maps';
 import { StyleSheet, View, Text } from 'react-native';
+import { useLocationStore } from './store';
+import { calculateRegion } from '@/lib/map';
+
+ 
 
 export default function Map() {
+  const {
+    userLongitude,
+    userLatitude,
+    destinationLatitude,
+    destinationLongitude,
+  }=useLocationStore();
+  const region = calculateRegion({
+      userLongitude,
+    userLatitude,
+    destinationLatitude,
+    destinationLongitude,
+  })
   return (
     <View style={styles.container}>
       <MapView 
         provider={PROVIDER_DEFAULT} 
         style={styles.map}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
+        initialRegion={region}
+          
+       
       />
       <Text style={{ marginTop: 10 }}>Map</Text>
     </View>
