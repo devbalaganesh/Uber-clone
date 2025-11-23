@@ -1,13 +1,45 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, FlatList, Image, ActivityIndicator, TouchableOpacity } from "react-native";
-import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { useEffect, useState } from "react";
+import * as Location from 'expo-location'
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
+import { useUser } from "@clerk/clerk-expo";
 import RideCard from "@/components/RideCard";
-import { images } from "@/constants";
-import { icons } from "@/constants";
+import { images, icons } from "@/constants";
+import GoogleTextInput from "@/components/GoogleTextInput";
+import Map from "@/components/Map";
+import { useLocationStore } from "@/components/store";
 
 export default function Page() {
+const { setUserLocation, setDestinationLocation } = useLocationStore();
+const [hasPermissions,setHasPermissions]=useState(false)
   const { user } = useUser();
   const loading = false;
+useEffect(()=>{
+const requestLoation=  async()=>{
+  let {status} = await Location.requestForegroundPermissionsAsync();
+  if(status!="granted"){
+    setHasPermissions(false);
+    return;
+  }
+
+  let location = await Location.getCurrentPositionAsync();
+  const address = Location.reverseGeocodeAsync({
+    latitude:location.coords?.latitude,
+    longitude:location.coords?.longitude
+  })
+  setUserLocation({
+    latitude:location.coords.latitude,
+    longitude:location.coords.longitude!
+  })
+}
+},[])
   const recentRides = [
     {
       ride_id: "1",
@@ -115,6 +147,9 @@ export default function Page() {
     },
   ];
 
+  const handleSignout = () => {};
+  const handleDestinationPress = () => {};
+
   return (
     <SafeAreaView className="bg-general-500">
       <FlatList
@@ -122,9 +157,7 @@ export default function Page() {
         renderItem={({ item }) => <RideCard ride={item} />}
         className="px-5"
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          paddingBottom: 100,
-        }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         ListEmptyComponent={() => (
           <View className="flex flex-col items-center justify-center">
             {!loading ? (
@@ -143,15 +176,42 @@ export default function Page() {
           </View>
         )}
         ListHeaderComponent={() => (
-          <View className="flex flex-row items-center justify-between my-5">
-            <Text className="text-1xl font-JakartaExtraBold">
-              Welcome {user?.firstName} ||
-              user?.emailAddresses[0].emailAddresses.spilt("@")[0]{""} 👋
+          <>
+            <View className="flex flex-row items-center justify-between my-5">
+              <Text className="text-2xl font-JakartaExtraBold">
+                Welcome,{" "}
+                {user?.firstName ||
+                  user?.emailAddresses[0].emailAddress.split("@")[0]}{" "}
+                👋
+              </Text>
+
+              <TouchableOpacity
+                onPress={handleSignout}
+                className="justify-center items-center w-10 h-10 rounded-lg bg-white"
+              >
+                <Image source={icons.out} className="w-4 h-4" />
+              </TouchableOpacity>
+            </View>
+
+            <GoogleTextInput
+              icon={icons.search}
+              containerStyle="bg-white shadow-md shadow-neutral-300"
+              handlePress={handleDestinationPress}
+            />
+            <>
+            <Text className="text-xl font-JakartaBold mt-5 mb-3">
+              Your Current Location
             </Text>
-            <TouchableOpacity>
-              <Image source={icons.out} className="w-4 h-4" />
-            </TouchableOpacity>
-          </View>
+            <View className="flex flex-row items-center bg-transparent  h-[300px]">
+<Map/>
+            </View>
+
+            </>
+            <Text className="text-xl font-JakartaBold mt-5 mb-3">
+              Recent Rides
+            </Text>
+          </>
+          
         )}
       />
     </SafeAreaView>
