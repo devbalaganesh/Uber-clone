@@ -1,0 +1,69 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*.local
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+android/app/build/
+ios/Pods/
+ios/build/
+
+# Metro bundler
+.metro/
+*.pack
+
+# TypeScript
+*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+*.swp
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+
+# Cache
+.cache/
+.next/cache/
+.npm/
+.yarn/
+.pnpm-store/
+
+# Coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Local env files for tools
+firebase-debug.log
